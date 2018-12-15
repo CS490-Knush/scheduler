@@ -47,7 +47,7 @@ def call_unicorn(computation_nodes, storage_nodes):
 
 def create_matrices(unicorn_out):
     # Create A matrix
-    A = [[0 for i in xrange(flow_id)] for b in xrange(len(unicorn_out['anes']))]
+    A = [[0 for i in range(flow_id)] for b in range(len(unicorn_out['anes']))]
     for idx, cstr in enumerate(unicorn_out['ane-matrix']):
         for flow in cstr:
             pos = int(flow['flow-id'])
