@@ -25,7 +25,13 @@ def submit_config(body):  # noqa: E501
         cplex_request = {}
         cplex_request["sourceNodes"] = body.computation_nodes
         cplex_request["destNodes"] = body.storage_nodes
-        return call_unicorn(body.computation_nodes, body.storage_nodes)
+        unicorn_out, flow_id = call_unicorn(body.computation_nodes, body.storage_nodes)
+        cplex_request["C"] = create_C_matrix(unicorn_out)
+        cplex_request["A"] = create_A_matrix(unicorn_out, flow_id)
+        cplex_request["numConstraints"] = len(cplex_request["A"])
+        cplex_request["jobs"] = ["j_%s" % i for i in body.computation_nodes]
+        print(cplex_request)
+
     return 400
 
 def call_unicorn(computation_nodes, storage_nodes):
@@ -42,22 +48,23 @@ def call_unicorn(computation_nodes, storage_nodes):
     if r.status_code != 200:
         print("Getting unicorn failed")
         return r.status_code
-    print(r.json())
-    create_matrices(r.json(), flow_id)
+    return r.json(), flow_id
 
-def create_matrices(unicorn_out, flow_id):
+def create_C_matrix(unicorn_out):
+    C = []
+    for bw in unicorn_out['anes']:
+        C.append(int(bw['availbw']))
+    print(C)
+    return C
+
+def create_A_matrix(unicorn_out, flow_id):
     # Create A matrix
     A = [[0 for i in range(flow_id)] for b in range(len(unicorn_out['anes']))]
     for idx, cstr in enumerate(unicorn_out['ane-matrix']):
         for flow in cstr:
             pos = int(flow['flow-id'])
             A[idx][pos] = 1
-    # Create C matrix
-    C = []
-    for bw in unicorn_out['anes']:
-        C.append(int(bw['availbw']))
     print(A)
-    print(C)
 
 
 def submit_jobs(body):  # noqa: E501
