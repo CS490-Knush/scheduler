@@ -43,9 +43,9 @@ def call_unicorn(computation_nodes, storage_nodes):
         print("Getting unicorn failed")
         return r.status_code
     print(r.json())
-    create_matrices(r.json())
+    create_matrices(r.json(), flow_id)
 
-def create_matrices(unicorn_out):
+def create_matrices(unicorn_out, flow_id):
     # Create A matrix
     A = [[0 for i in range(flow_id)] for b in range(len(unicorn_out['anes']))]
     for idx, cstr in enumerate(unicorn_out['ane-matrix']):
