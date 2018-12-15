@@ -50,9 +50,10 @@ docker run -p 8080:8080 swagger_server
 
 curl -H 'Content-type: application/json' -X POST -d '{
   "computationNodes": [
-    "10.0.0.251"
+    "10.0.0.251",
+    "10.0.0.252"
   ],
   "storageNodes": [
-    "10.0.0.252"
+    "10.0.0.253"
   ]
 }' localhost:8080/cpsc490/scheduler/1.0.0/configure

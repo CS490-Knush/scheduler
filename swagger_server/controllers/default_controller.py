@@ -6,6 +6,7 @@ from swagger_server.models.job_status import JobStatus  # noqa: E501
 from swagger_server.models.parameters import Parameters  # noqa: E501
 from swagger_server import util
 import requests
+import json
 
 
 def submit_config(body):  # noqa: E501
@@ -35,10 +36,7 @@ def call_unicorn(computation_nodes, storage_nodes):
             data["query-desc"].append({"flow": {"flow-id": str(flow_id), "src-ip": c, "dst-ip": s}})
             flow_id+=1
     print(data)
-    req = requests.Request('POST', 'http://172.17.0.2/experimental/v1/unicorn/resource-query', data=data, headers=headers)
-    r = requests.post('http://172.17.0.2/experimental/v1/unicorn/resource-query', data=data, headers=headers)
-    prepared = req.prepare()
-    pretty_print_POST(prepared)
+    r = requests.post('http://172.17.0.2/experimental/v1/unicorn/resource-query', data=json.dumps(data), headers=headers)
     if r.status_code != 200:
         print("Getting unicorn failed")
         return r.status_code
