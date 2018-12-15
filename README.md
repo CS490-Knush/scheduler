@@ -56,4 +56,4 @@ curl -H 'Content-type: application/json' -X POST -d '{
     "10.0.0.253",
     "10.0.0.252"
   ]
-}' localhost:8080/cpsc490/scheduler/1.0.0/configure
+}' 35.190.131.141:8080/cpsc490/scheduler/1.0.0/configure

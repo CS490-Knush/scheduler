@@ -69,10 +69,11 @@ def create_A_matrix(unicorn_out, flow_id):
     return A
 
 def run_cplex(cplex_request):
-    r = requests.post('http://35.196.13.25:8080/cpsc490/cplex_server/1.0.0/optimize', data=json.dumps(cplex_request))
+    headers = {'Content-Type': 'application/json'}
+    r = requests.post('http://35.196.13.25:8080/cpsc490/cplex_server/1.0.0/optimize', data=json.dumps(cplex_request), headers=headers)
     if r.status_code() == 200:
         print("Successful optimization")
-    job_code = int(r.text())
+    job_code = int(r.json())
     print(job_code)
     bimatrix = []
     imatrx = []
