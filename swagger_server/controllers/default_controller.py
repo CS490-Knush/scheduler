@@ -9,6 +9,8 @@ import requests
 import json
 
 flow_to_ip = {}
+vip_to_ip = {"10.0.251": "172.0.1.1"}
+computation_nodes = []
 
 def submit_config(body):  # noqa: E501
     """Submit storage and computation nodes to be optimized for cplex
@@ -23,6 +25,8 @@ def submit_config(body):  # noqa: E501
     if connexion.request.is_json:
         body = Parameters.from_dict(connexion.request.get_json())  # noqa: E501
         cplex_request = {}
+        computation_nodes = body.computation_nodes
+
         cplex_request["sourceNodes"] = body.computation_nodes
         cplex_request["destNodes"] = body.storage_nodes
         unicorn_out, flow_id = call_unicorn(body.computation_nodes, body.storage_nodes)
@@ -30,8 +34,11 @@ def submit_config(body):  # noqa: E501
         cplex_request["A"] = create_A_matrix(unicorn_out, flow_id)
         cplex_request["numConstraints"] = len(cplex_request["A"])
         cplex_request["jobs"] = ["j_%s" % i for i in body.computation_nodes]
+
         print(cplex_request)
         bimatrix, imatrix = run_cplex(cplex_request)
+        # Send to computation nodes using tc
+        tc_computation_nodes(bimatrix, imatrix)
         return 200
     return 400
 
@@ -97,6 +104,20 @@ def run_cplex(cplex_request):
     print(imatrix)
     return bimatrix, imatrix
 
+def tc_computation_nodes(bimatrix, imatrix):
+    # fill in
+    bimatrix_pos = 0
+    for idx, flow in enumerate(imatrix):
+        if 1 in flow: # we are using this flow
+            ips = flow_to_ip[idx]
+            # lookup from vip -> other one
+            src_ip = vip_to_ip[ips["src-ip"]]
+            data = {"storage_ip": ips["dst-ip"], "bandwidth": bimatrix[bimatrix_pos]}
+            r = requests.post('http://%s/tc' % src_ip, data=json.dumps(data))
+            if r.status_code == 200:
+                print("TC successful")
+            bimatrix_pos += 1
+
 def submit_jobs(body):  # noqa: E501
     """Submit jobs to be run on configured server
 
@@ -107,6 +128,14 @@ def submit_jobs(body):  # noqa: E501
 
     :rtype: JobStatus
     """
+    computation_nodes_copy = list(computation_nodes)
     if connexion.request.is_json:
         body = JobParams.from_dict(connexion.request.get_json())  # noqa: E501
+        for job in body:
+            if len(computation_nodes_copy == 0):
+                print("No computation nodes available...not completing job")
+                return
+            computation_node = vip_to_ip[computation_nodes_copy.pop()]
+            r = request.post('http://%s/run_job' % computation_node, data=job)
+            
     return 'do some magic!'
