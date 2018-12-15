@@ -28,7 +28,7 @@ def submit_config(body):  # noqa: E501
 
 def call_unicorn(computation_nodes, storage_nodes):
     data = {"query-desc": []}
-    headers = {'Content-Type': 'application/json'}
+    headers = {'Content-Type': 'application/json', 'accept': 'application/json'}
     flow_id = 1
     for c in computation_nodes:
         for s in storage_nodes:
@@ -36,11 +36,28 @@ def call_unicorn(computation_nodes, storage_nodes):
             flow_id+=1
     print(data)
     r = requests.post('http://172.17.0.2/experimental/v1/unicorn/resource-query', data=data, headers=headers)
+    prepared = r.prepare()
+    pretty_print_POST(prepared)
     if r.status_code != 200:
         print("Getting unicorn failed")
         return r.status_code
     print(r.json())
 
+def pretty_print_POST(req):
+    """
+    At this point it is completely built and ready
+    to be fired; it is "prepared".
+
+    However pay attention at the formatting used in 
+    this function because it is programmed to be pretty 
+    printed and may differ from the actual request.
+    """
+    print('{}\n{}\n{}\n\n{}'.format(
+        '-----------START-----------',
+        req.method + ' ' + req.url,
+        '\n'.join('{}: {}'.format(k, v) for k, v in req.headers.items()),
+        req.body,
+    ))
 
 def submit_jobs(body):  # noqa: E501
     """Submit jobs to be run on configured server
