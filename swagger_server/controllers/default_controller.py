@@ -32,7 +32,7 @@ def submit_config(body):  # noqa: E501
         cplex_request["jobs"] = ["j_%s" % i for i in body.computation_nodes]
         print(cplex_request)
         bimatrix, imatrix = run_cplex(cplex_request)
-
+        return 200
     return 400
 
 def call_unicorn(computation_nodes, storage_nodes):
@@ -88,10 +88,10 @@ def run_cplex(cplex_request):
             continue
         bimatrix_req = requests.get('http://35.196.13.25:8080/cpsc490/cplex_server/1.0.0/bijobmatrix/%d' % job_code)
         if bimatrix_req.status_code == 200:
-            bimatrix = r.json()
+            bimatrix = bimatrix_req.json()
         imatrix_req = requests.get('http://35.196.13.25:8080/cpsc490/cplex_server/1.0.0/imatrix/%d' % job_code)
         if bimatrix_req.status_code == 200:
-            imatrix = r.json()
+            imatrix = imatrix_req.json()
     print("Optimization complete...")
     print(bimatrix)
     print(imatrix)
