@@ -31,7 +31,7 @@ def call_unicorn(computation_nodes, storage_nodes):
     flow_id = 1
     for c in computation_nodes:
         for s in storage_nodes:
-            data.append({"flow": {"flow-id": str(flow_id), "src-ip": c, "dst-ip": s}})
+            data["query-desc"].append({"flow": {"flow-id": str(flow_id), "src-ip": c, "dst-ip": s}})
             flow_id+=1
 
     r = requests.post('http://172.17.0.2/experimental/v1/unicorn/resource-query', data=data)
