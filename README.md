@@ -48,7 +48,7 @@ docker build -t swagger_server .
 docker run -p 8080:8080 swagger_server
 ```
 
-curl -v -H 'Content-type: application/json' -X POST -d '{
+curl -H 'Content-type: application/json' -X POST -d '{
   "computationNodes": [
     "10.0.0.251"
   ],

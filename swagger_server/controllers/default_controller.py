@@ -39,6 +39,7 @@ def call_unicorn(computation_nodes, storage_nodes):
     if r.status_code != 200:
         print("Getting unicorn failed")
         return r.status_code
+    print(r.json())
 
 
 def submit_jobs(body):  # noqa: E501
