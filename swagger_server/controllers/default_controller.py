@@ -31,6 +31,7 @@ def submit_config(body):  # noqa: E501
         cplex_request["numConstraints"] = len(cplex_request["A"])
         cplex_request["jobs"] = ["j_%s" % i for i in body.computation_nodes]
         print(cplex_request)
+        bimatrix, imatrix = run_cplex(cplex_request)
 
     return 400
 
@@ -67,6 +68,33 @@ def create_A_matrix(unicorn_out, flow_id):
     print(A)
     return A
 
+def run_cplex(cplex_request):
+    r = requests.post('http://35.196.13.25:8080/cpsc490/cplex_server/1.0.0/optimize', data=json.dumps(cplex_request))
+    if r.status_code() == 200:
+        print("Successful optimization")
+    job_code = int(r.text())
+    print(job_code)
+    bimatrix = []
+    imatrx = []
+    while bimatrix == [] or imatrix == []:
+        r = requests.get('http://35.196.13.25:8080/cpsc490/cplex_server/1.0.0/status/%d' % job_code)
+        if r.status_code != 200:
+            print("error getting job status...")
+            return
+        print(r.json())
+        if r.json()['status'] != 'done':
+            print("Job is not done")
+            continue
+        bimatrix_req = requests.get('http://35.196.13.25:8080/cpsc490/cplex_server/1.0.0/bijobmatrix/%d' % job_code)
+        if bimatrix_req.status_code == 200:
+            bimatrix = r.json()
+        imatrix_req = requests.get('http://35.196.13.25:8080/cpsc490/cplex_server/1.0.0/imatrix/%d' % job_code)
+        if bimatrix_req.status_code == 200:
+            imatrix = r.json()
+    print("Optimization complete...")
+    print(bimatrix)
+    print(imatrix)
+    return bimatrix, imatrix
 
 def submit_jobs(body):  # noqa: E501
     """Submit jobs to be run on configured server
