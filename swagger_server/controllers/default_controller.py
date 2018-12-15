@@ -65,6 +65,7 @@ def create_A_matrix(unicorn_out, flow_id):
             pos = int(flow['flow-id'])
             A[idx][pos] = 1
     print(A)
+    return A
 
 
 def submit_jobs(body):  # noqa: E501
