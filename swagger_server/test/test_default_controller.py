@@ -21,7 +21,7 @@ class TestDefaultController(BaseTestCase):
         """
         body = Parameters()
         response = self.client.open(
-            '/cpsc490/cplex_server/1.0.0/configure',
+            '/cpsc490/scheduler/1.0.0/configure',
             method='POST',
             data=json.dumps(body),
             content_type='application/json')
