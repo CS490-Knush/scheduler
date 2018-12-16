@@ -109,6 +109,7 @@ def run_cplex(cplex_request):
 def tc_computation_nodes(bimatrix, imatrix):
     # fill in
     bimatrix_pos = 0
+    headers = {'Content-Type': 'application/json', 'accept': 'application/json'}
     for idx, flow in enumerate(imatrix):
         if 1 in flow: # we are using this flow
             print("Using flow %d" % idx)
@@ -116,7 +117,8 @@ def tc_computation_nodes(bimatrix, imatrix):
             # lookup from vip -> other one
             src_ip = vip_to_ip[ips["src-ip"]]
             data = {"storage_ip": ips["dst-ip"], "bandwidth": bimatrix[bimatrix_pos]}
-            r = requests.post('http://%s/tc' % src_ip, data=json.dumps(data))
+            print(json.dumps(data))
+            r = requests.post('http://%s/tc' % src_ip, data=json.dumps(data), headers=headers)
             if r.status_code == 200:
                 print("TC successful")
             bimatrix_pos += 1
