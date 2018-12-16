@@ -117,11 +117,16 @@ def tc_computation_nodes(bimatrix, imatrix):
             ips = flow_to_ip[idx]
             # lookup from vip -> other one
             src_ip = vip_to_ip[ips["src-ip"]]
+            dst_ip = vip_to_ip[ips["dst-ip"]]
+
             data = {"storage_ip": ips["dst-ip"], "bandwidth": bimatrix[bimatrix_pos]}
             print(json.dumps(data))
             r = requests.post('http://%s/tc' % src_ip, data=json.dumps(data), headers=headers)
             if r.status_code == 200:
-                print("TC successful")
+                print("TC successful - computation node")
+            r = requests.post('http://%s/tc' % dst_ip, data=json.dumps(data), headers=headers)
+            if r.status_code == 200:
+                print("TC successful - storage node")
             bimatrix_pos += 1
 
 def submit_jobs(body):  # noqa: E501

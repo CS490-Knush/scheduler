@@ -77,7 +77,7 @@ curl -H 'Content-type: application/json' -X POST -d '{
 curl -H 'Content-type: application/json' -X POST -d '{
   "jobs": [
     {
-      "dataFile": "/datafile.txt",
+      "dataFile": "static.txt",
       "sparkProgram": "/spark/examples/src/main/python/pi.py"
     }
   ]
