@@ -134,6 +134,8 @@ def submit_jobs(body):  # noqa: E501
     :rtype: JobStatus
     """
     computation_nodes_copy = list(computation_nodes)
+    print(computation_nodes)
+    print("Copy:" , computation_nodes_copy)
     if connexion.request.is_json:
         body = JobParams.from_dict(connexion.request.get_json())  # noqa: E501
         for job in body.jobs:
