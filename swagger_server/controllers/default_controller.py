@@ -38,9 +38,9 @@ def submit_config(body):  # noqa: E501
         cplex_request["jobs"] = ["j_%s" % i for i in body.computation_nodes]
 
         print(cplex_request)
-        bimatrix, imatrix = run_cplex(cplex_request)
+        bimatrix = run_cplex(cplex_request)
         # Send to computation nodes using tc
-        tc_computation_nodes(bimatrix, imatrix)
+        tc_computation_nodes(bimatrix)
         return 200
     return 400
 
@@ -85,13 +85,11 @@ def run_cplex(cplex_request):
     job_code = int(r.json())
     print(job_code)
     bimatrix = []
-    imatrx = []
-    while bimatrix == [] or imatrix == []:
+    while bimatrix == []:
         r = requests.get('http://35.196.13.25:8080/cpsc490/cplex_server/1.0.0/status/%d' % job_code)
         if r.status_code != 200:
             print("error getting job status...")
             return
-        print(r.json())
         if r.json()['status'] != 'done':
             time.sleep(2)
             print("Job is not done")
@@ -99,27 +97,22 @@ def run_cplex(cplex_request):
         bimatrix_req = requests.get('http://35.196.13.25:8080/cpsc490/cplex_server/1.0.0/bijobmatrix/%d' % job_code)
         if bimatrix_req.status_code == 200:
             bimatrix = bimatrix_req.json()
-        imatrix_req = requests.get('http://35.196.13.25:8080/cpsc490/cplex_server/1.0.0/imatrix/%d' % job_code)
-        if bimatrix_req.status_code == 200:
-            imatrix = imatrix_req.json()
     print("Optimization complete...")
     print(bimatrix)
-    print(imatrix)
-    return bimatrix, imatrix
+    return bimatrix
 
-def tc_computation_nodes(bimatrix, imatrix):
+def tc_computation_nodes(bimatrix):
     # fill in
-    bimatrix_pos = 0
     headers = {'Content-Type': 'application/json', 'accept': 'application/json'}
-    for idx, flow in enumerate(imatrix):
-        if 1 in flow: # we are using this flow
+    for idx, flow in enumerate(bimatrix):
+        if flow != 0: # we are using this flow
             print("Using flow %d" % idx)
             ips = flow_to_ip[idx]
             # lookup from vip -> other one
             src_ip = vip_to_ip[ips["src-ip"]]
             dst_ip = vip_to_ip[ips["dst-ip"]]
 
-            data = {"storage_ip": ips["dst-ip"], "bandwidth": bimatrix[bimatrix_pos]}
+            data = {"storage_ip": ips["dst-ip"], "bandwidth": flow}
             print(json.dumps(data))
             r = requests.post('http://%s/tc' % src_ip, data=json.dumps(data), headers=headers)
             if r.status_code == 200:
@@ -127,7 +120,6 @@ def tc_computation_nodes(bimatrix, imatrix):
             r = requests.post('http://%s/tc' % dst_ip, data=json.dumps(data), headers=headers)
             if r.status_code == 200:
                 print("TC successful - storage node")
-            bimatrix_pos += 1
 
 def submit_jobs(body):  # noqa: E501
     """Submit jobs to be run on configured server
