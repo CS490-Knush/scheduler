@@ -10,7 +10,7 @@ import json
 import time
 
 flow_to_ip = {}
-vip_to_ip = {"10.0.251": "172.0.1.1"}
+vip_to_ip = {"10.0.0.251": "172.17.0.3", "10.0.0.252": "172.17.0.4", "10.0.0.253": "172.17.0.5", "10.0.0.254": "172.17.0.6"}
 computation_nodes = []
 
 def submit_config(body):  # noqa: E501
@@ -111,6 +111,7 @@ def tc_computation_nodes(bimatrix, imatrix):
     bimatrix_pos = 0
     for idx, flow in enumerate(imatrix):
         if 1 in flow: # we are using this flow
+            print("Using flow %d" % idx)
             ips = flow_to_ip[idx]
             # lookup from vip -> other one
             src_ip = vip_to_ip[ips["src-ip"]]
