@@ -143,8 +143,9 @@ def submit_jobs(body):  # noqa: E501
             if len(computation_nodes_copy) == 0:
                 print("No computation nodes available...not completing job")
                 return
-            print(job)
+            data = {'data_file': job.data_file, 'spark_program': job.spark_program}
+            print(data, "data")
             computation_node = vip_to_ip[computation_nodes_copy.pop()]
-            r = requests.post('http://%s/run_job' % computation_node, data=json.dumps(job))
+            r = requests.post('http://%s/run_job' % computation_node, data=json.dumps(data))
 
     return 'do some magic!'
