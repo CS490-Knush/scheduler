@@ -134,6 +134,7 @@ def submit_jobs(body):  # noqa: E501
 
     :rtype: JobStatus
     """
+    headers = {'Content-Type': 'application/json', 'accept': 'application/json'}
     computation_nodes_copy = list(computation_nodes)
     print(computation_nodes)
     print("Copy:" , computation_nodes_copy)
@@ -146,6 +147,6 @@ def submit_jobs(body):  # noqa: E501
             data = {'data_file': job.data_file, 'spark_program': job.spark_program}
             print(data, "data")
             computation_node = vip_to_ip[computation_nodes_copy.pop(0)]
-            r = requests.post('http://%s/run_job' % computation_node, data=json.dumps(data))
+            r = requests.post('http://%s/run_job' % computation_node, data=json.dumps(data), headers=headers)
 
     return 'do some magic!'
