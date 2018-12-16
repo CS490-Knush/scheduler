@@ -23,6 +23,7 @@ def submit_config(body):  # noqa: E501
 
     :rtype: Dict[str, int]
     """
+    global computation_nodes
     if connexion.request.is_json:
         body = Parameters.from_dict(connexion.request.get_json())  # noqa: E501
         cplex_request = {}
