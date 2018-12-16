@@ -148,5 +148,5 @@ def submit_jobs(body):  # noqa: E501
             print(data, "data")
             computation_node = vip_to_ip[computation_nodes_copy.pop(0)]
             r = requests.post('http://%s/run_job' % computation_node, data=json.dumps(data), headers=headers)
-
+            return r.status_code
     return 'do some magic!'
