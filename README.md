@@ -66,6 +66,6 @@ curl -H 'Content-type: application/json' -X POST -d '{
 }' http://0.0.0.0:80/tc
 
 curl -H 'Content-type: application/json' -X POST -d '{
-  "data_file": "/home/anushreeagrawal/cplex-server/1_output_file.txt",
-  "spark_program": "/home/anushreeagrawal/simple_spark_program.py"
-}' http://0.0.0.0:80/run_job
+  ["dataFile": "/datafile.txt",
+  "sparkProgram": "/spark/examples/src/main/python/pi.py"]
+}' localhost:8080/cpsc490/scheduler/1.0.0/submitJobs

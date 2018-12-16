@@ -44,7 +44,7 @@ paths:
           description: "Invalid input"
       x-swagger-router-controller: "swagger_server.controllers.default_controller"
   /submitJobs:
-    get:
+    post:
       summary: "Submit jobs to be run on configured server"
       operationId: "submit_jobs"
       produces:
