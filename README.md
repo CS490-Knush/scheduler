@@ -65,7 +65,21 @@ curl -H 'Content-type: application/json' -X POST -d '{
   "storage_ip": "35.196.13.25"
 }' http://0.0.0.0:80/tc
 
+{
+  "jobs": [
+    {
+      "dataFile": "/datafile.txt",
+      "sparkProgram": "/spark/examples/src/main/python/pi.py"
+    }
+  ]
+}
+
 curl -H 'Content-type: application/json' -X POST -d '{
-  ["dataFile": "/datafile.txt",
-  "sparkProgram": "/spark/examples/src/main/python/pi.py"]
+  "jobs": [
+    {
+      "dataFile": "/datafile.txt",
+      "sparkProgram": "/spark/examples/src/main/python/pi.py"
+    }
+  ]
 }' localhost:8080/cpsc490/scheduler/1.0.0/submitJobs
+

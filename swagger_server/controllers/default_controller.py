@@ -136,7 +136,7 @@ def submit_jobs(body):  # noqa: E501
     computation_nodes_copy = list(computation_nodes)
     if connexion.request.is_json:
         body = JobParams.from_dict(connexion.request.get_json())  # noqa: E501
-        for job in body:
+        for job in body["jobs"]:
             if len(computation_nodes_copy == 0):
                 print("No computation nodes available...not completing job")
                 return
