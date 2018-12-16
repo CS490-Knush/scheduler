@@ -50,10 +50,22 @@ docker run -p 8080:8080 swagger_server
 
 curl -H 'Content-type: application/json' -X POST -d '{
   "computationNodes": [
-    "10.0.0.251"
+    "10.0.0.251",
+    "10.0.0.252"
   ],
   "storageNodes": [
     "10.0.0.253",
-    "10.0.0.252"
+    "10.0.0.254"
   ]
-}' 35.190.131.141:8080/cpsc490/scheduler/1.0.0/configure
+}' localhost:8080/cpsc490/scheduler/1.0.0/configure
+
+
+curl -H 'Content-type: application/json' -X POST -d '{
+  "bandwidth": 5000,
+  "storage_ip": "35.196.13.25"
+}' http://0.0.0.0:80/tc
+
+curl -H 'Content-type: application/json' -X POST -d '{
+  "data_file": "/home/anushreeagrawal/cplex-server/1_output_file.txt",
+  "spark_program": "/home/anushreeagrawal/simple_spark_program.py"
+}' http://0.0.0.0:80/run_job
