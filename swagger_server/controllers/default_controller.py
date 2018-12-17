@@ -38,6 +38,8 @@ def submit_config(body):  # noqa: E501
         cplex_request["A"] = create_A_matrix(unicorn_out, flow_id)
         cplex_request["numConstraints"] = len(cplex_request["A"])
         cplex_request["jobs"] = ["j_%s" % i for i in body.computation_nodes]
+        if body.flag != None:
+            cplex_request["flag"] = True
 
         print(cplex_request)
         bimatrix = run_cplex(cplex_request)

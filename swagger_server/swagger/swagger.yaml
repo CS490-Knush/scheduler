@@ -85,13 +85,16 @@ definitions:
         - "10.0.0.4"
         items:
           type: "string"
+      flag:
+        type: "boolean"
     example:
       computationNodes:
-      - "m1"
-      - "m2"
+      - "10.0.0.1"
+      - "10.0.0.2"
+      flag: true
       storageNodes:
-      - "n1"
-      - "n2"
+      - "10.0.0.3"
+      - "10.0.0.4"
   JobParams:
     type: "object"
     required:

@@ -15,26 +15,31 @@ class Parameters(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, computation_nodes: List[str]=None, storage_nodes: List[str]=None):  # noqa: E501
+    def __init__(self, computation_nodes: List[str]=None, storage_nodes: List[str]=None, flag: bool=None):  # noqa: E501
         """Parameters - a model defined in Swagger
 
         :param computation_nodes: The computation_nodes of this Parameters.  # noqa: E501
         :type computation_nodes: List[str]
         :param storage_nodes: The storage_nodes of this Parameters.  # noqa: E501
         :type storage_nodes: List[str]
+        :param flag: The flag of this Parameters.  # noqa: E501
+        :type flag: bool
         """
         self.swagger_types = {
             'computation_nodes': List[str],
-            'storage_nodes': List[str]
+            'storage_nodes': List[str],
+            'flag': bool
         }
 
         self.attribute_map = {
             'computation_nodes': 'computationNodes',
-            'storage_nodes': 'storageNodes'
+            'storage_nodes': 'storageNodes',
+            'flag': 'flag'
         }
 
         self._computation_nodes = computation_nodes
         self._storage_nodes = storage_nodes
+        self._flag = flag
 
     @classmethod
     def from_dict(cls, dikt) -> 'Parameters':
@@ -92,3 +97,24 @@ class Parameters(Model):
             raise ValueError("Invalid value for `storage_nodes`, must not be `None`")  # noqa: E501
 
         self._storage_nodes = storage_nodes
+
+    @property
+    def flag(self) -> bool:
+        """Gets the flag of this Parameters.
+
+
+        :return: The flag of this Parameters.
+        :rtype: bool
+        """
+        return self._flag
+
+    @flag.setter
+    def flag(self, flag: bool):
+        """Sets the flag of this Parameters.
+
+
+        :param flag: The flag of this Parameters.
+        :type flag: bool
+        """
+
+        self._flag = flag
