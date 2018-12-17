@@ -8,6 +8,7 @@ from swagger_server import util
 import requests
 import json
 import time
+import datetime
 
 flow_to_ip = {}
 vip_to_ip = {"10.0.0.251": "172.17.0.3", "10.0.0.252": "172.17.0.4", "10.0.0.253": "172.17.0.5", "10.0.0.254": "172.17.0.6"}
@@ -23,6 +24,7 @@ def submit_config(body):  # noqa: E501
 
     :rtype: Dict[str, int]
     """
+    start_time = time.time()
     global computation_nodes
     if connexion.request.is_json:
         body = Parameters.from_dict(connexion.request.get_json())  # noqa: E501
@@ -41,8 +43,18 @@ def submit_config(body):  # noqa: E501
         bimatrix = run_cplex(cplex_request)
         # Send to computation nodes using tc
         tc_computation_nodes(bimatrix)
+        total_time = time.time() - start_time
+        log(len(body.computation_nodes), len(body.storage_nodes), total_time)
         return 200
     return 400
+
+
+def log(num_comp_nodes, num_storage_nodes, total_time):
+    file_name = 'scheduler_{date:%Y-%m-%d_%H-%M-%S}.txt'.format(date=datetime.datetime.now())
+    with open(file_name, 'a') as f:
+         f.write("Current Time,Num Computation Nodes,Num Storage Nodes,Total Time\n")
+         f.write("%s,%s,%s,%s\n" % (str(time.time()), str(num_comp_nodes), str(num_storage_nodes), str(total_time)))
+
 
 def call_unicorn(computation_nodes, storage_nodes):
     data = {"query-desc": []}
