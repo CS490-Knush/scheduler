@@ -9,6 +9,7 @@ import requests
 import json
 import time
 import datetime
+from multiprocessing.dummy import Pool as ThreadPool
 
 flow_to_ip = {}
 vip_to_ip = {"10.0.0.251": "172.17.0.3", "10.0.0.252": "172.17.0.4", "10.0.0.253": "172.17.0.5", "10.0.0.254": "172.17.0.6"}
@@ -145,10 +146,11 @@ def submit_jobs(body):  # noqa: E501
 
     :rtype: JobStatus
     """
-    headers = {'Content-Type': 'application/json', 'accept': 'application/json'}
+    pool = ThreadPool(2)
     computation_nodes_copy = list(computation_nodes)
     print(computation_nodes)
     print("Copy:" , computation_nodes_copy)
+    data_list = []
     if connexion.request.is_json:
         body = JobParams.from_dict(connexion.request.get_json())  # noqa: E501
         for job in body.jobs:
@@ -158,6 +160,12 @@ def submit_jobs(body):  # noqa: E501
             data = {'data_file': job.data_file, 'spark_program': job.spark_program}
             print(data, "data")
             computation_node = vip_to_ip[computation_nodes_copy.pop(0)]
-            r = requests.post('http://%s/run_job' % computation_node, data=json.dumps(data), headers=headers)
-            return r.status_code
+            # r = requests.post('http://%s/run_job' % computation_node, data=json.dumps(data), headers=headers)
+            data_list.append({"data": data, "computation_node": computation_node})
+    pool.map(send_spark_request, data_list)
     return 'do some magic!'
+
+def send_spark_request(dic):
+    print("Sending request...", dic)
+    headers = {'Content-Type': 'application/json', 'accept': 'application/json'}
+    r = requests.post('http://%s/run_job' % dic["computation_node"], data=json.dumps(dic["data"]), headers=headers)

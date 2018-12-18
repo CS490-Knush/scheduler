@@ -56,7 +56,8 @@ curl -H 'Content-type: application/json' -X POST -d '{
   "storageNodes": [
     "10.0.0.253",
     "10.0.0.254"
-  ]
+  ],
+  "flag": true
 }' localhost:8080/cpsc490/scheduler/1.0.0/configure
 
 
